@@ -16,6 +16,7 @@ namespace MTeleportation
         public ulong tpSendCooldown;
         public ushort smallUI;
         public ushort bigUI;
+        public ushort tpaSuccedEffect;
         public bool autoAcceptSameGroupTpas;
         public ulong combatTimer;
         public int retryAttempts;
@@ -28,6 +29,7 @@ namespace MTeleportation
             tpSendCooldown = 30;
             smallUI = 28001;
             bigUI = 28000;
+            tpaSuccedEffect = 0;
             autoAcceptSameGroupTpas = true;
             combatTimer = 2;
             retryAttempts = 3;

@@ -405,7 +405,11 @@ namespace MTeleportation.Commands
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAFail"), MTeleportation.Instance.MessageColor);
                         canceled = true;
                     }
-                    if (!canceled) MTeleportation.tpaCooldown[(ulong)p.CSteamID] = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                    if (!canceled)
+                    {
+                        MTeleportation.tpaCooldown[(ulong)p.CSteamID] = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                        if (MTeleportation.Instance.Configuration.Instance.tpaSuccedEffect != 0) EffectManager.sendEffect(MTeleportation.Instance.Configuration.Instance.tpaSuccedEffect, 200, target.Position);
+                    }
                 }
                 if (canceled && retries > 0)
                 {
