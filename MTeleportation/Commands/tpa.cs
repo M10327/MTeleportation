@@ -368,11 +368,13 @@ namespace MTeleportation.Commands
                 {
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPADeadTarget"), MTeleportation.Instance.MessageColor);
                     canceled = true;
+                    retries = 0;
                 }
                 else if (p.Player.life.isDead)
                 {
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPADeadSelf"), MTeleportation.Instance.MessageColor);
                     canceled = true;
+                    retries = 0;
                 }
                 else if (target.IsInVehicle)
                 {
