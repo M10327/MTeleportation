@@ -151,6 +151,10 @@ namespace MTeleportation.Commands
                                 MTeleportation.autoDeny[(ulong)p.CSteamID] = "off";
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.autoDeny[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
                                 break;
+                            case "nonally":
+                                MTeleportation.autoDeny[(ulong)p.CSteamID] = "nonally";
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.autoDeny[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                break;
                             default:
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenyOptions"), MTeleportation.Instance.MessageColor);
                                 break;
@@ -288,6 +292,13 @@ namespace MTeleportation.Commands
                             return;
                         case "nongroup":
                             if (p.Player.quests.groupID != target.Player.quests.groupID)
+                            {
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAIgnored"), MTeleportation.Instance.MessageColor);
+                                return;
+                            }
+                            break;
+                        case "nonally":
+                            if (p.Player.quests.groupID != target.Player.quests.groupID && !CheckIfAllied((ulong)p.CSteamID, (ulong)target.CSteamID))
                             {
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAIgnored"), MTeleportation.Instance.MessageColor);
                                 return;
@@ -452,6 +463,28 @@ namespace MTeleportation.Commands
             {
                 MTeleportation.activeTpas.Remove(id);
             }
+        }
+
+        public bool CheckIfAllied(ulong teleporter, ulong target)
+        {
+            if (MTeleportation.Instance.Configuration.Instance.IsAlliesInstalled)
+            {
+                return CheckIfAllies2(teleporter, target);
+            }
+            return false;
+        }
+
+        public bool CheckIfAllies2(ulong teleporter, ulong target)
+        {
+            var allies = MAllies.MAllies.Instance.allies.data;
+            if (allies.ContainsKey(teleporter))
+            {
+                if (allies[teleporter].Contains(target))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

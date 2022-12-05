@@ -167,7 +167,7 @@ namespace MTeleportation
             { "InCombatNoAccept", "You cannot accept a tpa during combat! Please wait {0} seconds" },
             { "InCombatTPAFail", "Tpa failed, {0} is in combat" },
             { "TPARetry", "Tpa failed, retrying {0} more times" },
-            { "AutoDenyOptions", "Use /tpa autodeny <all/nongroup/off>" },
+            { "AutoDenyOptions", "Use /tpa autodeny <all/nongroup/nonally/off>" },
             { "AutoDenySet", "Auto deny set to {0}" },
             { "TPAIgnored", "Your tpa request has been ignored" },
             { "BlacklistOptions", "Use /tpa blacklist <add/remove/list/clear> (player name)" },

@@ -20,6 +20,7 @@ namespace MTeleportation
         public bool autoAcceptSameGroupTpas;
         public ulong combatTimer;
         public int retryAttempts;
+        public bool IsAlliesInstalled;
         public void LoadDefaults()
         {
             verbose = false;
@@ -33,6 +34,7 @@ namespace MTeleportation
             autoAcceptSameGroupTpas = true;
             combatTimer = 2;
             retryAttempts = 3;
+            IsAlliesInstalled = true;
         }
     }
 }
