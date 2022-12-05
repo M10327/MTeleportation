@@ -426,7 +426,11 @@ namespace MTeleportation.Commands
                     RemoveActiveTP(p.CSteamID);
                     return;
                 }
-
+                if (!MTeleportation.activeTpas.ContainsKey((ulong)p.CSteamID))
+                {
+                    UnturnedChat.Say(p, MTeleportation.Instance.Translate("TpaWasCanceledUnknown"), MTeleportation.Instance.MessageColor);
+                    return; 
+                }
                 if (target.Player.life.isDead)
                 {
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPADeadTarget"), MTeleportation.Instance.MessageColor);

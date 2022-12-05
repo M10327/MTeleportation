@@ -2,6 +2,7 @@
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
+using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
@@ -47,6 +48,7 @@ namespace MTeleportation
 
             U.Events.OnPlayerConnected += Events_OnPlayerConnected;
             U.Events.OnPlayerDisconnected += Events_OnPlayerDisconnected;
+            UnturnedPlayerEvents.OnPlayerDeath += UnturnedPlayerEvents_OnPlayerDeath;
             foreach (var steamPlayer in Provider.clients)
             {
                 UnturnedPlayer p = UnturnedPlayer.FromSteamPlayer(steamPlayer);
@@ -63,6 +65,19 @@ namespace MTeleportation
                 }
                 else if (x.Value.Count == 0){
                     blacklists.data.Remove(x.Key);
+                }
+            }
+        }
+
+        private void UnturnedPlayerEvents_OnPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, Steamworks.CSteamID murderer)
+        {
+            ulong id = (ulong)player.CSteamID;
+            foreach (var kvp in activeTpas.ToArray())
+            {
+                if (kvp.Key == id || kvp.Value == id)
+                {
+                    activeTpas.Remove(kvp.Key);
+                    return;
                 }
             }
         }
@@ -187,7 +202,8 @@ namespace MTeleportation
             { "BClear", "Cleared your tpa blacklist" },
             { "AlreadyTeleporting", "You are already teleporting. Cannot tp again!" },
             { "AutoAcceptSet", "Set autoaccept to {0}" },
-            { "AutoAcceptOptions", "Use /tpa autoaccept <group/ally/none>" }
+            { "AutoAcceptOptions", "Use /tpa autoaccept <group/ally/none>" },
+            { "TpaWasCanceledUnknown", "The tpa was canceled" }
         };
 
         protected override void Unload()
@@ -195,6 +211,7 @@ namespace MTeleportation
             U.Events.OnPlayerConnected -= Events_OnPlayerConnected;
             U.Events.OnPlayerDisconnected -= Events_OnPlayerDisconnected;
             DamageTool.onPlayerAllowedToDamagePlayer -= PlayerDamagePlayer;
+            UnturnedPlayerEvents.OnPlayerDeath -= UnturnedPlayerEvents_OnPlayerDeath;
             blacklists.CommitToFile();
         }
     }
