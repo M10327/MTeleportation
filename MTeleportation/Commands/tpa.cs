@@ -50,6 +50,12 @@ namespace MTeleportation.Commands
                             requester = UnturnedPlayer.FromCSteamID((CSteamID)x.Key);
                             if (requester != null)
                             {
+                                if (MTeleportation.activeTpas.ContainsKey((ulong)p.CSteamID))
+                                {
+                                    UnturnedChat.Say(requester, MTeleportation.Instance.Translate("AlreadyTeleporting"), MTeleportation.Instance.MessageColor);
+                                    return;
+                                }
+                                MTeleportation.activeTpas.Add((ulong)requester.CSteamID, (ulong)p.CSteamID);
                                 TpToPlayer(p, requester, false, MTeleportation.Instance.Configuration.Instance.retryAttempts);
                                 UnturnedChat.Say(requester, MTeleportation.Instance.Translate("TPAAccepted", p.DisplayName), MTeleportation.Instance.MessageColor);
                                 requesterDisplayName = requester.CharacterName;
@@ -292,6 +298,12 @@ namespace MTeleportation.Commands
                     // if players are in same group
                     if (p.Player.quests.groupID == target.Player.quests.groupID && (ulong)p.Player.quests.groupID != 0 && MTeleportation.Instance.Configuration.Instance.autoAcceptSameGroupTpas)
                     {
+                        if (MTeleportation.activeTpas.ContainsKey((ulong)p.CSteamID))
+                        {
+                            UnturnedChat.Say(p, MTeleportation.Instance.Translate("AlreadyTeleporting"), MTeleportation.Instance.MessageColor);
+                            return;
+                        }
+                        MTeleportation.activeTpas.Add((ulong)p.CSteamID, (ulong)target.CSteamID);
                         TpToPlayer(target, p, false, MTeleportation.Instance.Configuration.Instance.retryAttempts);
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAAccepted", target.CharacterName), MTeleportation.Instance.MessageColor);
                         UnturnedChat.Say(target, MTeleportation.Instance.Translate("IsTping", p.DisplayName), MTeleportation.Instance.MessageColor);
@@ -360,9 +372,17 @@ namespace MTeleportation.Commands
             try
             {
                 bool canceled = false;
-                if (target == null || p == null) return;
+                if (target == null || p == null)
+                {
+                    RemoveActiveTP(p.CSteamID);
+                    return;
+                }
                 if (!instant) await Task.Delay((MTeleportation.Instance.Configuration.Instance.tpDelay * 1000));
-                if (target == null || p == null) return;
+                if (target == null || p == null)
+                {
+                    RemoveActiveTP(p.CSteamID);
+                    return;
+                }
 
                 if (target.Player.life.isDead)
                 {
@@ -420,8 +440,18 @@ namespace MTeleportation.Commands
                     await Task.Delay(1000);
                     TpToPlayer(target, p, true, retries);
                 }
+                else RemoveActiveTP(p.CSteamID);
             }
             catch { }
+        }
+
+        public void RemoveActiveTP(CSteamID playerID)
+        {
+            ulong id = (ulong)playerID;
+            if (MTeleportation.activeTpas.ContainsKey(id))
+            {
+                MTeleportation.activeTpas.Remove(id);
+            }
         }
     }
 }

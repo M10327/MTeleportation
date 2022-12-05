@@ -22,6 +22,7 @@ namespace MTeleportation
         public static List<SteamPlayer> playerList;
         public static Dictionary<ulong, ulong> combatCooldown;
         public static Dictionary<ulong, string> autoDeny;
+        public static Dictionary<ulong, ulong> activeTpas;
         public UnityEngine.Color MessageColor { get; set; }
         public BlacklistDB blacklists;
 
@@ -33,6 +34,7 @@ namespace MTeleportation
             tpaUI = new Dictionary<ulong, string>();
             combatCooldown = new Dictionary<ulong, ulong>();
             autoDeny = new Dictionary<ulong, string>();
+            activeTpas = new Dictionary<ulong, ulong>();
             MessageColor = (Color)UnturnedChat.GetColorFromHex(Configuration.Instance.messageColor);
             blacklists = new BlacklistDB();
             blacklists.Reload();
@@ -130,6 +132,10 @@ namespace MTeleportation
             {
                 autoDeny.Remove((ulong)p.CSteamID);
             }
+            if (activeTpas.ContainsKey((ulong)p.CSteamID))
+            {
+                activeTpas.Remove((ulong)p.CSteamID);
+            }
             playerList = Provider.clients;
         }
 
@@ -168,7 +174,8 @@ namespace MTeleportation
             { "BList", "Blacklisted players: {0}" },
             { "BAdd", "Added {0} to your tpa blacklist" },
             { "BRemove", "Removed {0} from your tpa blacklist" },
-            { "BClear", "Cleared your tpa blacklist" }
+            { "BClear", "Cleared your tpa blacklist" },
+            { "AlreadyTeleporting", "You are already teleporting. Cannot tp again!" }
         };
 
         protected override void Unload()
