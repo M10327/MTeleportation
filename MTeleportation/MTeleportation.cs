@@ -23,6 +23,7 @@ namespace MTeleportation
         public static Dictionary<ulong, ulong> combatCooldown;
         public static Dictionary<ulong, string> autoDeny;
         public static Dictionary<ulong, ulong> activeTpas;
+        public static Dictionary<ulong, string> autoAccept;
         public UnityEngine.Color MessageColor { get; set; }
         public BlacklistDB blacklists;
 
@@ -35,6 +36,7 @@ namespace MTeleportation
             combatCooldown = new Dictionary<ulong, ulong>();
             autoDeny = new Dictionary<ulong, string>();
             activeTpas = new Dictionary<ulong, ulong>();
+            autoAccept = new Dictionary<ulong, string>();
             MessageColor = (Color)UnturnedChat.GetColorFromHex(Configuration.Instance.messageColor);
             blacklists = new BlacklistDB();
             blacklists.Reload();
@@ -96,6 +98,10 @@ namespace MTeleportation
             {
                 autoDeny[(ulong)p.CSteamID] = "none";
             }
+            if (!autoAccept.ContainsKey((ulong)p.CSteamID))
+            {
+                autoAccept[(ulong)p.CSteamID] = Configuration.Instance.AutoAcceptDefault;
+            }
             playerList = Provider.clients;
         }
 
@@ -136,13 +142,17 @@ namespace MTeleportation
             {
                 activeTpas.Remove((ulong)p.CSteamID);
             }
+            if (autoAccept.ContainsKey((ulong)p.CSteamID))
+            {
+                autoAccept.Remove((ulong)p.CSteamID);
+            }
             playerList = Provider.clients;
         }
 
         public override TranslationList DefaultTranslations => new TranslationList()
         {
             { "TargetNotFound", "Target was not found" },
-            { "TPAHelp", "Use: /tpa playername/accept/deny/cancel/ui/autodeny/blacklist" },
+            { "TPAHelp", "Use: /tpa playername/accept/deny/cancel/ui/autodeny/autoaccept/blacklist" },
             { "TPADuplicate", "You've already sent a tpa request to {0}" },
             { "TPASend", "You sent a tpa request to {0}" },
             { "TPARecieve", "You've recieved a tpa request from {0}" },
@@ -175,7 +185,9 @@ namespace MTeleportation
             { "BAdd", "Added {0} to your tpa blacklist" },
             { "BRemove", "Removed {0} from your tpa blacklist" },
             { "BClear", "Cleared your tpa blacklist" },
-            { "AlreadyTeleporting", "You are already teleporting. Cannot tp again!" }
+            { "AlreadyTeleporting", "You are already teleporting. Cannot tp again!" },
+            { "AutoAcceptSet", "Set autoaccept to {0}" },
+            { "AutoAcceptOptions", "Use /tpa autoaccept <group/ally/none>" }
         };
 
         protected override void Unload()

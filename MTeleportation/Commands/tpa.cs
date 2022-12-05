@@ -166,6 +166,35 @@ namespace MTeleportation.Commands
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenyOptions"), MTeleportation.Instance.MessageColor);
                     }
                 }
+                else if (command[0].ToLower() == "autoaccept")
+                {
+                    if (command.Length >= 2)
+                    {
+                        switch (command[1].ToLower())
+                        {
+                            case "group":
+                                MTeleportation.autoAccept[(ulong)p.CSteamID] = "group";
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.autoAccept[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                break;
+                            case "none":
+                                MTeleportation.autoAccept[(ulong)p.CSteamID] = "none";
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.autoAccept[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                break;
+                            case "ally":
+                                MTeleportation.autoAccept[(ulong)p.CSteamID] = "ally";
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.autoAccept[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                break;
+                            default:
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptOptions"), MTeleportation.Instance.MessageColor);
+                                break;
+                        }
+                        return;
+                    }
+                    else
+                    {
+                        UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptOptions"), MTeleportation.Instance.MessageColor);
+                    }
+                }
                 else if (command[0].ToLower() == "blacklist" || command[0].ToLower() == "bl")
                 {
                     if (command.Length >= 2)
@@ -307,7 +336,10 @@ namespace MTeleportation.Commands
                     }
 
                     // if players are in same group
-                    if (p.Player.quests.groupID == target.Player.quests.groupID && (ulong)p.Player.quests.groupID != 0 && MTeleportation.Instance.Configuration.Instance.autoAcceptSameGroupTpas)
+                    if (MTeleportation.Instance.Configuration.Instance.AllowAutoAccept
+                        && ((p.Player.quests.groupID == target.Player.quests.groupID && (ulong)p.Player.quests.groupID != 0
+                            && (MTeleportation.autoAccept[(ulong)target.CSteamID] == "group" || MTeleportation.autoAccept[(ulong)target.CSteamID] == "ally"))
+                        || (MTeleportation.autoAccept[(ulong)target.CSteamID] == "ally") && CheckIfAllied((ulong)p.CSteamID, (ulong)target.CSteamID)))
                     {
                         if (MTeleportation.activeTpas.ContainsKey((ulong)p.CSteamID))
                         {

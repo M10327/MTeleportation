@@ -17,10 +17,11 @@ namespace MTeleportation
         public ushort smallUI;
         public ushort bigUI;
         public ushort tpaSuccedEffect;
-        public bool autoAcceptSameGroupTpas;
+        public bool AllowAutoAccept;
         public ulong combatTimer;
         public int retryAttempts;
         public bool IsAlliesInstalled;
+        public string AutoAcceptDefault;
         public void LoadDefaults()
         {
             verbose = false;
@@ -31,10 +32,11 @@ namespace MTeleportation
             smallUI = 28001;
             bigUI = 28000;
             tpaSuccedEffect = 0;
-            autoAcceptSameGroupTpas = true;
+            AllowAutoAccept = true;
             combatTimer = 2;
             retryAttempts = 3;
             IsAlliesInstalled = true;
+            AutoAcceptDefault = "ally";
         }
     }
 }
