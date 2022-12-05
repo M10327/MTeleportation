@@ -441,8 +441,26 @@ namespace MTeleportation.Commands
                 }
                 else if (target.IsInVehicle)
                 {
-                    UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAVehicleTarget"), MTeleportation.Instance.MessageColor);
-                    canceled = true;
+                    var vehicle = target.CurrentVehicle;
+                    bool hasSeats = false;
+                    foreach (var pas in vehicle.passengers)
+                    {
+                        if (pas.player == null)
+                        {
+                            hasSeats = true;
+                            break;
+                        }
+                    }
+                    if (hasSeats)
+                    {
+                        VehicleManager.ServerForcePassengerIntoVehicle(p.Player, vehicle);
+                    }
+                    else
+                    {
+                        UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAVehicleTarget"), MTeleportation.Instance.MessageColor);
+                        canceled = true;
+
+                    }
                 }
                 else if (p.IsInVehicle)
                 {
@@ -464,6 +482,14 @@ namespace MTeleportation.Commands
                     if (distance < 5)
                     {
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPASuccess", target.CharacterName), MTeleportation.Instance.MessageColor);
+                    }
+                    else if (p.IsInVehicle && target.IsInVehicle)
+                    {
+                        if (p.CurrentVehicle != target.CurrentVehicle)
+                        {
+                            UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAFail"), MTeleportation.Instance.MessageColor);
+                            canceled = true;
+                        }
                     }
                     else
                     {
