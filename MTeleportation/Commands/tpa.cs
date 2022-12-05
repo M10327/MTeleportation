@@ -515,7 +515,7 @@ namespace MTeleportation.Commands
                 }
                 else RemoveActiveTP(p.CSteamID);
             }
-            catch { }
+            catch (Exception ex){ Rocket.Core.Logging.Logger.LogError($"TPA Error: {ex}"); }
         }
 
         public void RemoveActiveTP(CSteamID playerID)
