@@ -179,7 +179,7 @@ namespace MTeleportation
             { "TPADenied", "{0} denied your tpa request" },
             { "TPASuccess", "You have been teleported to {0}" },
             { "TPAYourself", "You cannot tpa to yourself" },
-            { "TPAVehicleTarget", "Cannot tpa, target is in vehicle" },
+            { "TPAVehicleTarget", "Cannot tpa, target's vehicle is full" },
             { "TPAVehicleSelf", "Cannot tpa, you are in a vehicle" },
             { "TPADeadTarget", "Cannot tpa, target is dead" },
             { "TPADeadSelf", "Cannot tpa, you are dead" },
