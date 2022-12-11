@@ -22,6 +22,7 @@ namespace MTeleportation
         public int retryAttempts;
         public bool IsAlliesInstalled;
         public string AutoAcceptDefault;
+        public int MaxYValueToAutoAccept;
         public void LoadDefaults()
         {
             verbose = false;
@@ -31,12 +32,13 @@ namespace MTeleportation
             tpSendCooldown = 30;
             smallUI = 28001;
             bigUI = 28000;
-            tpaSuccedEffect = 0;
+            tpaSuccedEffect = 1956;
             AllowAutoAccept = true;
             combatTimer = 2;
             retryAttempts = 3;
             IsAlliesInstalled = true;
-            AutoAcceptDefault = "ally";
+            AutoAcceptDefault = "group";
+            MaxYValueToAutoAccept = 150;
         }
     }
 }

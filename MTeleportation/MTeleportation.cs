@@ -203,7 +203,9 @@ namespace MTeleportation
             { "AlreadyTeleporting", "You are already teleporting. Cannot tp again!" },
             { "AutoAcceptSet", "Set autoaccept to {0}" },
             { "AutoAcceptOptions", "Use /tpa autoaccept <group/ally/none>" },
-            { "TpaWasCanceledUnknown", "The tpa was canceled" }
+            { "TpaWasCanceledUnknown", "The tpa was canceled" },
+            { "TpaTargetTooHighSelf", "You are too high up to accept tpas" },
+            { "TpaTargetTooHigh", "{0} is too high to accept" }
         };
 
         protected override void Unload()

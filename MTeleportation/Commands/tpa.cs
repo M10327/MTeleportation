@@ -35,6 +35,11 @@ namespace MTeleportation.Commands
                 RemoveOldTpas((ulong)p.CSteamID);
                 if (command[0].ToLower() == "accept" || command[0].ToLower() == "a")
                 {
+                    if (p.Position.y > MTeleportation.Instance.Configuration.Instance.MaxYValueToAutoAccept)
+                    {
+                        UnturnedChat.Say(caller, MTeleportation.Instance.Translate("TpaTargetTooHighSelf"), MTeleportation.Instance.MessageColor);
+                        return;
+                    }
                     if (MTeleportation.tpaRequests[(ulong)p.CSteamID].Count >= 1)
                     {
                         if (MTeleportation.combatCooldown[(ulong)p.CSteamID] + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
@@ -344,6 +349,11 @@ namespace MTeleportation.Commands
                         if (MTeleportation.activeTpas.ContainsKey((ulong)p.CSteamID))
                         {
                             UnturnedChat.Say(p, MTeleportation.Instance.Translate("AlreadyTeleporting"), MTeleportation.Instance.MessageColor);
+                            return;
+                        }
+                        if (target.Position.y > MTeleportation.Instance.Configuration.Instance.MaxYValueToAutoAccept)
+                        {
+                            UnturnedChat.Say(p, MTeleportation.Instance.Translate("TpaTargetTooHigh", target.DisplayName), MTeleportation.Instance.MessageColor);
                             return;
                         }
                         MTeleportation.activeTpas.Add((ulong)p.CSteamID, (ulong)target.CSteamID);
