@@ -393,20 +393,6 @@ namespace MTeleportation.Commands
             }
         }
 
-        [Obsolete]
-        public void RemoveOldTpas(ulong target)
-        {
-            ulong currentTime = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
-            Dictionary<ulong,ulong> tempDict = MTeleportation.meta[target].Requests;
-            foreach (var x in MTeleportation.meta[target].Requests.ToArray())
-            {
-                if (currentTime - x.Value >= MTeleportation.Instance.Configuration.Instance.tpaExpiration)
-                {
-                    MTeleportation.meta[target].Requests.Remove(x.Key);
-                }
-            }
-        }
-
         public async void TpToPlayer(UnturnedPlayer target, UnturnedPlayer p, bool instant, int retries)
         {
             try
