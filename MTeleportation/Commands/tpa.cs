@@ -304,7 +304,7 @@ namespace MTeleportation.Commands
                         return;
                     }
 
-                    if ((ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds() - MTeleportation.tpaCooldown[(ulong)p.CSteamID] < MTeleportation.Instance.Configuration.Instance.tpSendCooldown)
+                    if ((ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds() - MTeleportation.tpaCooldown[(ulong)p.CSteamID] < GetCooldown(p.Player.quests.groupID))
                     {
                         long cooldown = (long)MTeleportation.Instance.Configuration.Instance.tpSendCooldown - Math.Abs((long)MTeleportation.tpaCooldown[(ulong)p.CSteamID] - (long)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds());
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPACooldown", cooldown), MTeleportation.Instance.MessageColor);
@@ -535,6 +535,20 @@ namespace MTeleportation.Commands
             {
                 MTeleportation.activeTpas.Remove(id);
             }
+        }
+
+        public ulong GetCooldown(CSteamID groupId)
+        {
+            ulong groupMembers = GetOnlineGroupMemberCount(groupId);
+            if (groupMembers > 2) groupMembers -= 2;
+            ulong extra = groupMembers * MTeleportation.Instance.Configuration.Instance.CooldownPerGroupMember;
+            return extra + MTeleportation.Instance.Configuration.Instance.tpSendCooldown;
+        }
+
+        public byte GetOnlineGroupMemberCount(CSteamID groupId)
+        {
+            if (groupId == CSteamID.Nil) return 0;
+            return (byte)Provider.clients.Where(x => x.player.quests.isMemberOfGroup(groupId)).Count();
         }
 
         public bool CheckIfAllied(ulong teleporter, ulong target)

@@ -14,6 +14,7 @@ namespace MTeleportation
         public ulong tpaExpiration;
         public int tpDelay;
         public ulong tpSendCooldown;
+        public ulong CooldownPerGroupMember;
         public ushort smallUI;
         public ushort bigUI;
         public ushort tpaSuccedEffect;
@@ -30,6 +31,7 @@ namespace MTeleportation
             tpaExpiration = 60;
             tpDelay = 3;
             tpSendCooldown = 30;
+            CooldownPerGroupMember = 5;
             smallUI = 28001;
             bigUI = 28000;
             tpaSuccedEffect = 1956;
