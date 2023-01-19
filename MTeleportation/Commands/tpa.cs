@@ -275,16 +275,7 @@ namespace MTeleportation.Commands
                 }
                 else
                 {
-                    UnturnedPlayer target = null;
-                    try
-                    {
-                        target = UnturnedPlayer.FromName(command[0]);
-                    }
-                    catch
-                    {
-                        UnturnedChat.Say(p, MTeleportation.Instance.Translate("TargetNotFound"), MTeleportation.Instance.MessageColor);
-                        return;
-                    }
+                    UnturnedPlayer target = UnturnedPlayer.FromName(command[0]);
                     if (target == null || p == null)
                     {
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TargetNotFound"), MTeleportation.Instance.MessageColor);
