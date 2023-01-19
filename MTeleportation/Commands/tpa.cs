@@ -541,6 +541,7 @@ namespace MTeleportation.Commands
         {
             ulong groupMembers = GetOnlineGroupMemberCount(groupId);
             if (groupMembers > 2) groupMembers -= 2;
+            else groupMembers = 0;
             ulong extra = groupMembers * MTeleportation.Instance.Configuration.Instance.CooldownPerGroupMember;
             return extra + MTeleportation.Instance.Configuration.Instance.tpSendCooldown;
         }
