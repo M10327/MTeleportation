@@ -74,6 +74,11 @@ namespace MTeleportation
                 ulong id = (ulong)pl.playerID.steamID;
                 if (meta[id].SendCooldown > 0) meta[id].SendCooldown -= 1;
                 if (meta[id].CombatCooldown > 0) meta[id].CombatCooldown -= 1;
+                foreach(var req in meta[id].Requests.ToArray())
+                {
+                    if (meta[id].Requests[req.Key] > 0) meta[id].Requests[req.Key]--;
+                    else meta[id].Requests.Remove(req.Key);
+                }
             }
         }
 

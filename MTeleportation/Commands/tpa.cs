@@ -32,7 +32,6 @@ namespace MTeleportation.Commands
             ulong currentTime = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
             if (command.Length >= 1)
             {
-                RemoveOldTpas((ulong)p.CSteamID);
                 if (command[0].ToLower() == "accept" || command[0].ToLower() == "a")
                 {
                     if (p.Position.y > MTeleportation.Instance.Configuration.Instance.MaxYValueToAutoAccept)
@@ -292,7 +291,6 @@ namespace MTeleportation.Commands
                         return;
 
                     }
-                    RemoveOldTpas((ulong)target.CSteamID);
                     if (target.CSteamID == p.CSteamID) // checks if player is self and cancels. I comment this out for testing
                     {
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAYourself"), MTeleportation.Instance.MessageColor);
@@ -362,7 +360,7 @@ namespace MTeleportation.Commands
                     }
                     else // regular tpa req functionality
                     {
-                        MTeleportation.meta[(ulong)target.CSteamID].Requests.Add((ulong)p.CSteamID, currentTime);
+                        MTeleportation.meta[(ulong)target.CSteamID].Requests.Add((ulong)p.CSteamID, MTeleportation.Instance.Configuration.Instance.tpaExpiration);
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPASend", target.CharacterName), MTeleportation.Instance.MessageColor);
                         UnturnedChat.Say(target, MTeleportation.Instance.Translate("TPARecieve", p.DisplayName), MTeleportation.Instance.MessageColor);
                         switch (MTeleportation.meta[(ulong)target.CSteamID].UI)
@@ -404,6 +402,7 @@ namespace MTeleportation.Commands
             }
         }
 
+        [Obsolete]
         public void RemoveOldTpas(ulong target)
         {
             ulong currentTime = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
