@@ -42,9 +42,9 @@ namespace MTeleportation.Commands
                     }
                     if (MTeleportation.meta[(ulong)p.CSteamID].Requests.Count >= 1)
                     {
-                        if (MTeleportation.meta[(ulong)p.CSteamID].CombatCooldown + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
+                        if (MTeleportation.meta[(ulong)p.CSteamID].CombatCooldown > 0)
                         {
-                            UnturnedChat.Say(caller, MTeleportation.Instance.Translate("InCombatNoAccept", MTeleportation.meta[(ulong)p.CSteamID].CombatCooldown + MTeleportation.Instance.Configuration.Instance.combatTimer - (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds()), MTeleportation.Instance.MessageColor);
+                            UnturnedChat.Say(caller, MTeleportation.Instance.Translate("InCombatNoAccept", MTeleportation.meta[(ulong)p.CSteamID].CombatCooldown), MTeleportation.Instance.MessageColor);
                             return;
                         }
                         var x = MTeleportation.meta[(ulong)p.CSteamID].Requests.First();
@@ -304,10 +304,9 @@ namespace MTeleportation.Commands
                         return;
                     }
 
-                    if ((ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds() - MTeleportation.meta[(ulong)p.CSteamID].SendCooldown < GetCooldown(p.Player.quests.groupID))
+                    if (MTeleportation.meta[(ulong)p.CSteamID].SendCooldown > 0)
                     {
-                        long cooldown = (long)MTeleportation.Instance.Configuration.Instance.tpSendCooldown - Math.Abs((long)MTeleportation.meta[(ulong)p.CSteamID].SendCooldown - (long)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds());
-                        UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPACooldown", cooldown), MTeleportation.Instance.MessageColor);
+                        UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPACooldown", MTeleportation.meta[(ulong)p.CSteamID].SendCooldown), MTeleportation.Instance.MessageColor);
                         return;
                     }
 
@@ -479,7 +478,7 @@ namespace MTeleportation.Commands
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAVehicleSelf"), MTeleportation.Instance.MessageColor);
                     canceled = true;
                 }
-                else if (MTeleportation.meta[(ulong)target.CSteamID].CombatCooldown + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
+                else if (MTeleportation.meta[(ulong)target.CSteamID].CombatCooldown > 0)
                 {
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("InCombatTPAFail", target.DisplayName), MTeleportation.Instance.MessageColor);
                     canceled = true;
@@ -510,7 +509,7 @@ namespace MTeleportation.Commands
                     }
                     if (!canceled)
                     {
-                        MTeleportation.meta[(ulong)p.CSteamID].SendCooldown = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                        MTeleportation.meta[(ulong)p.CSteamID].SendCooldown = GetCooldown(p.CSteamID);
                         if (MTeleportation.Instance.Configuration.Instance.tpaSuccedEffect != 0) EffectManager.sendEffect(MTeleportation.Instance.Configuration.Instance.tpaSuccedEffect, 200, target.Position);
                     }
                 }

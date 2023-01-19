@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using UnityEngine;
 
 namespace MTeleportation
@@ -20,6 +21,7 @@ namespace MTeleportation
         public static Dictionary<ulong, PlayerMeta> meta;
         public static List<SteamPlayer> playerList;
         public static Dictionary<ulong, ulong> activeTpas;
+        private static System.Timers.Timer CoolDownManager;
         public UnityEngine.Color MessageColor { get; set; }
         public BlacklistDB blacklists;
 
@@ -58,6 +60,21 @@ namespace MTeleportation
                     blacklists.data.Remove(x.Key);
                 }
             }
+
+            CoolDownManager = new System.Timers.Timer(1000);
+            CoolDownManager.Elapsed += ReduceCooldowns;
+            CoolDownManager.AutoReset = true;
+            CoolDownManager.Enabled = true;
+        }
+
+        private void ReduceCooldowns(object sender, ElapsedEventArgs e)
+        {
+            foreach (var pl in playerList)
+            {
+                ulong id = (ulong)pl.playerID.steamID;
+                if (meta[id].SendCooldown > 0) meta[id].SendCooldown -= 1;
+                if (meta[id].CombatCooldown > 0) meta[id].CombatCooldown -= 1;
+            }
         }
 
         private void UnturnedPlayerEvents_OnPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, Steamworks.CSteamID murderer)
@@ -77,8 +94,8 @@ namespace MTeleportation
         {
             if (isAllowed)
             {
-                meta[(ulong)UnturnedPlayer.FromPlayer(instigator).CSteamID].CombatCooldown = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
-                meta[(ulong)UnturnedPlayer.FromPlayer(victim).CSteamID].CombatCooldown = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                meta[(ulong)UnturnedPlayer.FromPlayer(instigator).CSteamID].CombatCooldown = Configuration.Instance.combatTimer;
+                meta[(ulong)UnturnedPlayer.FromPlayer(victim).CSteamID].CombatCooldown = Configuration.Instance.combatTimer;
             }
         }
 
@@ -159,6 +176,11 @@ namespace MTeleportation
             DamageTool.onPlayerAllowedToDamagePlayer -= PlayerDamagePlayer;
             UnturnedPlayerEvents.OnPlayerDeath -= UnturnedPlayerEvents_OnPlayerDeath;
             blacklists.CommitToFile();
+            if (CoolDownManager != null)
+            {
+                CoolDownManager.Stop();
+                CoolDownManager.Elapsed -= ReduceCooldowns;
+            }
         }
     }
 }
