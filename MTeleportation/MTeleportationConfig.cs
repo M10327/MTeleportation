@@ -22,7 +22,7 @@ namespace MTeleportation
         public ulong combatTimer;
         public int retryAttempts;
         public bool IsAlliesInstalled;
-        public string AutoAcceptDefault;
+        public int AutoAcceptDefault;
         public int MaxYValueToAutoAccept;
         public void LoadDefaults()
         {
@@ -39,7 +39,7 @@ namespace MTeleportation
             combatTimer = 2;
             retryAttempts = 3;
             IsAlliesInstalled = true;
-            AutoAcceptDefault = "group";
+            AutoAcceptDefault = 1;
             MaxYValueToAutoAccept = 150;
         }
     }

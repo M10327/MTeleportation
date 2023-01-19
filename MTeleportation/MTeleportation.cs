@@ -17,27 +17,18 @@ namespace MTeleportation
     public class MTeleportation : RocketPlugin<MTeleportationConfig>
     {
         public static MTeleportation Instance { get; private set; }
-        public static Dictionary<ulong, Dictionary<ulong, ulong>> tpaRequests;
-        public static Dictionary<ulong, ulong> tpaCooldown;
-        public static Dictionary<ulong, string> tpaUI;
+        public static Dictionary<ulong, PlayerMeta> meta;
         public static List<SteamPlayer> playerList;
-        public static Dictionary<ulong, ulong> combatCooldown;
-        public static Dictionary<ulong, string> autoDeny;
         public static Dictionary<ulong, ulong> activeTpas;
-        public static Dictionary<ulong, string> autoAccept;
         public UnityEngine.Color MessageColor { get; set; }
         public BlacklistDB blacklists;
 
         protected override void Load()
         {
             Instance = this;
-            tpaRequests = new Dictionary<ulong, Dictionary<ulong, ulong>>();
-            tpaCooldown = new Dictionary<ulong, ulong>();
-            tpaUI = new Dictionary<ulong, string>();
-            combatCooldown = new Dictionary<ulong, ulong>();
-            autoDeny = new Dictionary<ulong, string>();
+            meta = new Dictionary<ulong, PlayerMeta>();
             activeTpas = new Dictionary<ulong, ulong>();
-            autoAccept = new Dictionary<ulong, string>();
+
             MessageColor = (Color)UnturnedChat.GetColorFromHex(Configuration.Instance.messageColor);
             blacklists = new BlacklistDB();
             blacklists.Reload();
@@ -86,36 +77,15 @@ namespace MTeleportation
         {
             if (isAllowed)
             {
-                combatCooldown[(ulong)UnturnedPlayer.FromPlayer(instigator).CSteamID] = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
-                combatCooldown[(ulong)UnturnedPlayer.FromPlayer(victim).CSteamID] = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                meta[(ulong)UnturnedPlayer.FromPlayer(instigator).CSteamID].CombatCooldown = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                meta[(ulong)UnturnedPlayer.FromPlayer(victim).CSteamID].CombatCooldown = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
             }
         }
 
         private void Events_OnPlayerConnected(Rocket.Unturned.Player.UnturnedPlayer p)
         {
-            if (!tpaRequests.ContainsKey((ulong)p.CSteamID))
-            {
-                tpaRequests[(ulong)p.CSteamID] = new Dictionary<ulong, ulong>();
-            }
-            if (!tpaCooldown.ContainsKey((ulong)p.CSteamID))
-            {
-                tpaCooldown[(ulong)p.CSteamID] = 0;
-            }
-            if (!tpaUI.ContainsKey((ulong)p.CSteamID))
-            {
-                tpaUI[(ulong)p.CSteamID] = "big";
-            }
-            if (!combatCooldown.ContainsKey((ulong)p.CSteamID))
-            {
-                combatCooldown[(ulong)p.CSteamID] = 0;
-            }
-            if (!autoDeny.ContainsKey((ulong)p.CSteamID))
-            {
-                autoDeny[(ulong)p.CSteamID] = "none";
-            }
-            if (!autoAccept.ContainsKey((ulong)p.CSteamID))
-            {
-                autoAccept[(ulong)p.CSteamID] = Configuration.Instance.AutoAcceptDefault;
+            if (!meta.ContainsKey((ulong)p.CSteamID)){
+                meta[(ulong)p.CSteamID] = new PlayerMeta(EUI.big, EAutoDeny.off, (EAutoAccept)Configuration.Instance.AutoAcceptDefault);
             }
             playerList = Provider.clients;
         }
@@ -125,41 +95,15 @@ namespace MTeleportation
             foreach (var steamPlayer in Provider.clients)
             {
                 UnturnedPlayer t = UnturnedPlayer.FromSteamPlayer(steamPlayer);
-                if (tpaRequests.ContainsKey((ulong)t.CSteamID))
+                if (meta[(ulong)t.CSteamID].Requests.ContainsKey((ulong)p.CSteamID))
                 {
-                    if (tpaRequests[(ulong)t.CSteamID].ContainsKey((ulong)p.CSteamID)){
-                        tpaRequests[(ulong)t.CSteamID].Remove((ulong)p.CSteamID);
-                    }
+                    meta[(ulong)t.CSteamID].Requests.Remove((ulong)p.CSteamID);
                 }
 
             }
-            if (tpaRequests.ContainsKey((ulong)p.CSteamID))
+            if (meta.ContainsKey((ulong)p.CSteamID))
             {
-                tpaRequests.Remove((ulong)p.CSteamID);
-            }
-            if (tpaCooldown.ContainsKey((ulong)p.CSteamID))
-            {
-                tpaCooldown.Remove((ulong)p.CSteamID);
-            }
-            if (tpaUI.ContainsKey((ulong)p.CSteamID))
-            {
-                tpaUI.Remove((ulong)p.CSteamID);
-            }
-            if (combatCooldown.ContainsKey((ulong)p.CSteamID))
-            {
-                combatCooldown.Remove((ulong)p.CSteamID);
-            }
-            if (autoDeny.ContainsKey((ulong)p.CSteamID))
-            {
-                autoDeny.Remove((ulong)p.CSteamID);
-            }
-            if (activeTpas.ContainsKey((ulong)p.CSteamID))
-            {
-                activeTpas.Remove((ulong)p.CSteamID);
-            }
-            if (autoAccept.ContainsKey((ulong)p.CSteamID))
-            {
-                autoAccept.Remove((ulong)p.CSteamID);
+                meta.Remove((ulong)p.CSteamID);
             }
             playerList = Provider.clients;
         }

@@ -82,8 +82,10 @@
   <ItemGroup>
     <Compile Include="BlacklistDB.cs" />
     <Compile Include="Commands\tpa.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="MTeleportation.cs" />
     <Compile Include="MTeleportationConfig.cs" />
+    <Compile Include="PlayerMeta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

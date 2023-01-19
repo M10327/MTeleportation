@@ -40,14 +40,14 @@ namespace MTeleportation.Commands
                         UnturnedChat.Say(caller, MTeleportation.Instance.Translate("TpaTargetTooHighSelf"), MTeleportation.Instance.MessageColor);
                         return;
                     }
-                    if (MTeleportation.tpaRequests[(ulong)p.CSteamID].Count >= 1)
+                    if (MTeleportation.meta[(ulong)p.CSteamID].Requests.Count >= 1)
                     {
-                        if (MTeleportation.combatCooldown[(ulong)p.CSteamID] + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
+                        if (MTeleportation.meta[(ulong)p.CSteamID].CombatCooldown + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
                         {
-                            UnturnedChat.Say(caller, MTeleportation.Instance.Translate("InCombatNoAccept", MTeleportation.combatCooldown[(ulong)p.CSteamID] + MTeleportation.Instance.Configuration.Instance.combatTimer - (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds()), MTeleportation.Instance.MessageColor);
+                            UnturnedChat.Say(caller, MTeleportation.Instance.Translate("InCombatNoAccept", MTeleportation.meta[(ulong)p.CSteamID].CombatCooldown + MTeleportation.Instance.Configuration.Instance.combatTimer - (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds()), MTeleportation.Instance.MessageColor);
                             return;
                         }
-                        var x = MTeleportation.tpaRequests[(ulong)p.CSteamID].First();
+                        var x = MTeleportation.meta[(ulong)p.CSteamID].Requests.First();
                         UnturnedPlayer requester = null;
                         string requesterDisplayName = "Name not found";
                         try
@@ -68,7 +68,7 @@ namespace MTeleportation.Commands
                         }
                         catch { }
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAAccept", requesterDisplayName), MTeleportation.Instance.MessageColor);
-                        MTeleportation.tpaRequests[(ulong)p.CSteamID].Remove(x.Key);
+                        MTeleportation.meta[(ulong)p.CSteamID].Requests.Remove(x.Key);
                     }
                     else
                     {
@@ -79,9 +79,9 @@ namespace MTeleportation.Commands
                 }
                 else if (command[0].ToLower() == "deny" || command[0].ToLower() == "d")
                 {
-                    if (MTeleportation.tpaRequests[(ulong)p.CSteamID].Count >= 1)
+                    if (MTeleportation.meta[(ulong)p.CSteamID].Requests.Count >= 1)
                     {
-                        var x = MTeleportation.tpaRequests[(ulong)p.CSteamID].First();
+                        var x = MTeleportation.meta[(ulong)p.CSteamID].Requests.First();
                         UnturnedPlayer requester = null;
                         string requesterDisplayName = "Name not found";
                         try
@@ -95,7 +95,7 @@ namespace MTeleportation.Commands
                         }
                         catch { }
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPADeny", requesterDisplayName), MTeleportation.Instance.MessageColor);
-                        MTeleportation.tpaRequests[(ulong)p.CSteamID].Remove(x.Key);
+                        MTeleportation.meta[(ulong)p.CSteamID].Requests.Remove(x.Key);
                     }
                     else
                     {
@@ -115,16 +115,16 @@ namespace MTeleportation.Commands
                         switch (command[1].ToLower())
                         {
                             case "big":
-                                MTeleportation.tpaUI[(ulong)p.CSteamID] = "big";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("UISet", MTeleportation.tpaUI[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].UI = EUI.big;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("UISet", MTeleportation.meta[(ulong)p.CSteamID].UI), MTeleportation.Instance.MessageColor);
                                 break;
                             case "small":
-                                MTeleportation.tpaUI[(ulong)p.CSteamID] = "small";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("UISet", MTeleportation.tpaUI[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].UI = EUI.small;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("UISet", MTeleportation.meta[(ulong)p.CSteamID].UI), MTeleportation.Instance.MessageColor);
                                 break;
                             case "off":
-                                MTeleportation.tpaUI[(ulong)p.CSteamID] = "off";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("UISet", MTeleportation.tpaUI[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].UI = EUI.off;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("UISet", MTeleportation.meta[(ulong)p.CSteamID].UI), MTeleportation.Instance.MessageColor);
                                 break;
                             default:
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("UIHelp"), MTeleportation.Instance.MessageColor);
@@ -145,20 +145,20 @@ namespace MTeleportation.Commands
                         switch (command[1].ToLower())
                         {
                             case "all":
-                                MTeleportation.autoDeny[(ulong)p.CSteamID] = "all";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.autoDeny[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoDeny = EAutoDeny.all;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.meta[(ulong)p.CSteamID].AutoDeny), MTeleportation.Instance.MessageColor);
                                 break;
                             case "nongroup":
-                                MTeleportation.autoDeny[(ulong)p.CSteamID] = "nongroup";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.autoDeny[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoDeny = EAutoDeny.nongroup;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.meta[(ulong)p.CSteamID].AutoDeny), MTeleportation.Instance.MessageColor);
                                 break;
                             case "off":
-                                MTeleportation.autoDeny[(ulong)p.CSteamID] = "off";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.autoDeny[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoDeny = EAutoDeny.off;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.meta[(ulong)p.CSteamID].AutoDeny), MTeleportation.Instance.MessageColor);
                                 break;
                             case "nonally":
-                                MTeleportation.autoDeny[(ulong)p.CSteamID] = "nonally";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.autoDeny[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoDeny = EAutoDeny.nonally;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenySet", MTeleportation.meta[(ulong)p.CSteamID].AutoDeny), MTeleportation.Instance.MessageColor);
                                 break;
                             default:
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenyOptions"), MTeleportation.Instance.MessageColor);
@@ -178,16 +178,16 @@ namespace MTeleportation.Commands
                         switch (command[1].ToLower())
                         {
                             case "group":
-                                MTeleportation.autoAccept[(ulong)p.CSteamID] = "group";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.autoAccept[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoAccept = EAutoAccept.group;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.meta[(ulong)p.CSteamID].AutoAccept), MTeleportation.Instance.MessageColor);
                                 break;
                             case "none":
-                                MTeleportation.autoAccept[(ulong)p.CSteamID] = "none";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.autoAccept[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoAccept = EAutoAccept.none;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.meta[(ulong)p.CSteamID].AutoAccept), MTeleportation.Instance.MessageColor);
                                 break;
                             case "ally":
-                                MTeleportation.autoAccept[(ulong)p.CSteamID] = "ally";
-                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.autoAccept[(ulong)p.CSteamID]), MTeleportation.Instance.MessageColor);
+                                MTeleportation.meta[(ulong)p.CSteamID].AutoAccept = EAutoAccept.ally;
+                                UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptSet", MTeleportation.meta[(ulong)p.CSteamID].AutoAccept), MTeleportation.Instance.MessageColor);
                                 break;
                             default:
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoAcceptOptions"), MTeleportation.Instance.MessageColor);
@@ -298,15 +298,15 @@ namespace MTeleportation.Commands
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAYourself"), MTeleportation.Instance.MessageColor);
                         return;
                     }
-                    if (MTeleportation.tpaRequests[(ulong)target.CSteamID].ContainsKey((ulong)p.CSteamID))
+                    if (MTeleportation.meta[(ulong)target.CSteamID].Requests.ContainsKey((ulong)p.CSteamID))
                     {
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPADuplicate", target.DisplayName), MTeleportation.Instance.MessageColor);
                         return;
                     }
 
-                    if ((ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds() - MTeleportation.tpaCooldown[(ulong)p.CSteamID] < GetCooldown(p.Player.quests.groupID))
+                    if ((ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds() - MTeleportation.meta[(ulong)p.CSteamID].SendCooldown < GetCooldown(p.Player.quests.groupID))
                     {
-                        long cooldown = (long)MTeleportation.Instance.Configuration.Instance.tpSendCooldown - Math.Abs((long)MTeleportation.tpaCooldown[(ulong)p.CSteamID] - (long)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds());
+                        long cooldown = (long)MTeleportation.Instance.Configuration.Instance.tpSendCooldown - Math.Abs((long)MTeleportation.meta[(ulong)p.CSteamID].SendCooldown - (long)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds());
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPACooldown", cooldown), MTeleportation.Instance.MessageColor);
                         return;
                     }
@@ -319,19 +319,19 @@ namespace MTeleportation.Commands
                         }
                     }
 
-                    switch (MTeleportation.autoDeny[(ulong)target.CSteamID]) // auto deny stuff
+                    switch (MTeleportation.meta[(ulong)target.CSteamID].AutoDeny) // auto deny stuff
                     {
-                        case "all":
+                        case EAutoDeny.all:
                             UnturnedChat.Say(p, MTeleportation.Instance.Translate("AutoDenied"), MTeleportation.Instance.MessageColor);
                             return;
-                        case "nongroup":
+                        case EAutoDeny.nongroup:
                             if (p.Player.quests.groupID != target.Player.quests.groupID)
                             {
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAIgnored"), MTeleportation.Instance.MessageColor);
                                 return;
                             }
                             break;
-                        case "nonally":
+                        case EAutoDeny.nonally:
                             if (p.Player.quests.groupID != target.Player.quests.groupID && !CheckIfAllied((ulong)p.CSteamID, (ulong)target.CSteamID))
                             {
                                 UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAIgnored"), MTeleportation.Instance.MessageColor);
@@ -343,8 +343,8 @@ namespace MTeleportation.Commands
                     // if players are in same group
                     if (MTeleportation.Instance.Configuration.Instance.AllowAutoAccept
                         && ((p.Player.quests.groupID == target.Player.quests.groupID && (ulong)p.Player.quests.groupID != 0
-                            && (MTeleportation.autoAccept[(ulong)target.CSteamID] == "group" || MTeleportation.autoAccept[(ulong)target.CSteamID] == "ally"))
-                        || (MTeleportation.autoAccept[(ulong)target.CSteamID] == "ally") && CheckIfAllied((ulong)p.CSteamID, (ulong)target.CSteamID)))
+                            && (MTeleportation.meta[(ulong)target.CSteamID].AutoAccept == EAutoAccept.group || MTeleportation.meta[(ulong)target.CSteamID].AutoAccept == EAutoAccept.ally))
+                        || (MTeleportation.meta[(ulong)target.CSteamID].AutoAccept == EAutoAccept.ally) && CheckIfAllied((ulong)p.CSteamID, (ulong)target.CSteamID)))
                     {
                         if (MTeleportation.activeTpas.ContainsKey((ulong)p.CSteamID))
                         {
@@ -363,20 +363,18 @@ namespace MTeleportation.Commands
                     }
                     else // regular tpa req functionality
                     {
-                        MTeleportation.tpaRequests[(ulong)target.CSteamID].Add((ulong)p.CSteamID, currentTime);
+                        MTeleportation.meta[(ulong)target.CSteamID].Requests.Add((ulong)p.CSteamID, currentTime);
                         UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPASend", target.CharacterName), MTeleportation.Instance.MessageColor);
                         UnturnedChat.Say(target, MTeleportation.Instance.Translate("TPARecieve", p.DisplayName), MTeleportation.Instance.MessageColor);
-                        switch (MTeleportation.tpaUI[(ulong)target.CSteamID])
+                        switch (MTeleportation.meta[(ulong)target.CSteamID].UI)
                         {
-                            case "big":
+                            case EUI.big:
                                 EffectManager.askEffectClearByID(MTeleportation.Instance.Configuration.Instance.bigUI, target.Player.channel.owner.transportConnection);
                                 EffectManager.sendUIEffect(MTeleportation.Instance.Configuration.Instance.bigUI, (short)(MTeleportation.Instance.Configuration.Instance.bigUI + 10), target.Player.channel.owner.transportConnection, true, MTeleportation.Instance.Translate("UITitle"), MTeleportation.Instance.Translate("TPARecieve", p.DisplayName));
                                 break;
-                            case "small":
+                            case EUI.small:
                                 EffectManager.askEffectClearByID(MTeleportation.Instance.Configuration.Instance.smallUI, target.Player.channel.owner.transportConnection);
                                 EffectManager.sendUIEffect(MTeleportation.Instance.Configuration.Instance.smallUI, (short)(MTeleportation.Instance.Configuration.Instance.smallUI + 10), target.Player.channel.owner.transportConnection, true, MTeleportation.Instance.Translate("TPARecieve", p.DisplayName));
-                                break;
-                            case "off":
                                 break;
                         }
                     }
@@ -395,12 +393,12 @@ namespace MTeleportation.Commands
             {
                 UnturnedPlayer target = UnturnedPlayer.FromSteamPlayer(steamPlayer);
                 if (MTeleportation.Instance.Configuration.Instance.verbose) Rocket.Core.Logging.Logger.Log("working on " + target.CharacterName);
-                foreach (var x in MTeleportation.tpaRequests[(ulong)target.CSteamID])
+                foreach (var x in MTeleportation.meta[(ulong)target.CSteamID].Requests)
                 {
                     if (MTeleportation.Instance.Configuration.Instance.verbose) Rocket.Core.Logging.Logger.Log("removing User " + canceler + " from " + target.CharacterName);
                     if (x.Key == canceler)
                     {
-                        MTeleportation.tpaRequests[(ulong)target.CSteamID].Remove(x.Key);
+                        MTeleportation.meta[(ulong)target.CSteamID].Requests.Remove(x.Key);
                         return;
                     }
                 }
@@ -410,12 +408,12 @@ namespace MTeleportation.Commands
         public void RemoveOldTpas(ulong target)
         {
             ulong currentTime = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
-            Dictionary<ulong,ulong> tempDict = MTeleportation.tpaRequests[target];
-            foreach (var x in MTeleportation.tpaRequests[target].ToArray())
+            Dictionary<ulong,ulong> tempDict = MTeleportation.meta[target].Requests;
+            foreach (var x in MTeleportation.meta[target].Requests.ToArray())
             {
                 if (currentTime - x.Value >= MTeleportation.Instance.Configuration.Instance.tpaExpiration)
                 {
-                    MTeleportation.tpaRequests[target].Remove(x.Key);
+                    MTeleportation.meta[target].Requests.Remove(x.Key);
                 }
             }
         }
@@ -481,7 +479,7 @@ namespace MTeleportation.Commands
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("TPAVehicleSelf"), MTeleportation.Instance.MessageColor);
                     canceled = true;
                 }
-                else if (MTeleportation.combatCooldown[(ulong)target.CSteamID] + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
+                else if (MTeleportation.meta[(ulong)target.CSteamID].CombatCooldown + MTeleportation.Instance.Configuration.Instance.combatTimer > (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
                 {
                     UnturnedChat.Say(p, MTeleportation.Instance.Translate("InCombatTPAFail", target.DisplayName), MTeleportation.Instance.MessageColor);
                     canceled = true;
@@ -512,7 +510,7 @@ namespace MTeleportation.Commands
                     }
                     if (!canceled)
                     {
-                        MTeleportation.tpaCooldown[(ulong)p.CSteamID] = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+                        MTeleportation.meta[(ulong)p.CSteamID].SendCooldown = (ulong)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
                         if (MTeleportation.Instance.Configuration.Instance.tpaSuccedEffect != 0) EffectManager.sendEffect(MTeleportation.Instance.Configuration.Instance.tpaSuccedEffect, 200, target.Position);
                     }
                 }
