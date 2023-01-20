@@ -93,6 +93,10 @@ namespace MTeleportation
                     return;
                 }
             }
+            if (Configuration.Instance.DeathTpaSendCooldown > 0)
+            {
+                meta[(ulong)player.CSteamID].SendCooldown += Configuration.Instance.DeathTpaSendCooldown;
+            }
         }
 
         private void PlayerDamagePlayer(Player instigator, Player victim, ref bool isAllowed)

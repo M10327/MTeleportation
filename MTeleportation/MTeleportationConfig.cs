@@ -24,6 +24,7 @@ namespace MTeleportation
         public bool IsAlliesInstalled;
         public int AutoAcceptDefault;
         public int MaxYValueToAutoAccept;
+        public ulong DeathTpaSendCooldown;
         public void LoadDefaults()
         {
             verbose = false;
@@ -41,6 +42,7 @@ namespace MTeleportation
             IsAlliesInstalled = true;
             AutoAcceptDefault = 1;
             MaxYValueToAutoAccept = 150;
+            DeathTpaSendCooldown = 30;
         }
     }
 }
